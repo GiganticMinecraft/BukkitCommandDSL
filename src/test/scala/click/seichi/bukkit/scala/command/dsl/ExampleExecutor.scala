@@ -1,39 +1,46 @@
 package click.seichi.bukkit.scala.command.dsl
 
+import click.seichi.bukkit.scala.command.dsl.CommandConfiguration._
+import click.seichi.bukkit.scala.command.dsl.Result._
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
-import click.seichi.bukkit.scala.command.dsl.DSL._
-import click.seichi.bukkit.scala.command.dsl._
-import click.seichi.bukkit.scala.command.internal.generic.{Failed, Success}
 
 class Plugin extends JavaPlugin
 
+
 object ExampleExecutor {
-  def repeatMessageExecutor: DSLBasedCommandExecutor = {
+  def repeatMessageExecutor: TreeCommandExecutor = {
     configureCommand
-      .canBeExecutedByPlayers
-      .transformArgumentsWith(Identity ::: IntParser ::: Nil)
-      .executionWithContext { context ->
-        context.arguments match {
-          case message ::: number ::: Nil =>
+      .canBeExecutedBy[Player]()
+      .withArgValidations(
+
+      )
+      .executionWithContext {
+        context =>
+          context.args match {
+          case message ::: number ::: _ =>
             if (number > 0) {
               for (_ <- 1 to number) context.sender.sendMessage(message)
-              Success
+
+              succeed
             } else {
               // it could have been validated earlier but it's possible to do it now too
-              Failed("number must be positive!")
+              failWithMessage("number must be positive!")
             }
         }
       }
   }
 
-  def killPlayerExecutor(implicit plugin: Plugin): DSLBasedCommandExecutor = {
-    configurePlayerCommand()
-      .transformArgumentsWithTabCompletions(onlinePlayerNameCompletor ::: Nil)
-      .executionWithContext(context -> {
-        val player: Player = context.arguments.head
+  def killPlayerExecutor(implicit plugin: Plugin): TreeCommandExecutor = {
+    configureCommand
+      .canBeExecutedBy[Player]()
+      .withArgValidations()
+      .executionWithContext(context => {
+        val player: Player = context.args.head
         player.setHealth(0.0D)
         player.sendMessage(s"You've been killed by ${context.sender.getName()}!")
+
+        succeed
       })
   }
 
