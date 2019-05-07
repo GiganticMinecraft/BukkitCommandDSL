@@ -37,7 +37,7 @@ object TArgListOps {
     new TrailHeadMappable[H ::: T, Trail] {
       override type MapResult[B] = H ::: ev.MapResult[B]
       override def mapTrailHead[B](conversion: Trail => Option[B])(argList: H ::: T): Option[MapResult[B]] = {
-        ev.mapTrailHead(conversion)(argList.xs).map(result => argList.x ::: result)
+        ev.mapTrailHead(conversion)(argList.tail).map(result => argList.head ::: result)
       }
     }
   }

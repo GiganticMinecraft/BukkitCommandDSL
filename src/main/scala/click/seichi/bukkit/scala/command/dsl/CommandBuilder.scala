@@ -7,11 +7,11 @@ import org.bukkit.command.{CommandSender, TabExecutor}
 import scala.collection.immutable.ListMap
 import scala.reflect.ClassTag
 
-object CommandConfiguration {
+object CommandBuilder {
   def configureCommand: SenderValidationReceiver.type = SenderValidationReceiver
 
   object SenderValidationReceiver {
-    def canBeExecutedBy[CS <: CommandSender : ClassTag](errorOtherwise: Option[String] = None): ArgumentValidationReceiver[CS] = {
+    def canBeExecutedBy[CS <: CommandSender : ClassTag](errorOtherwise: Option[String]): ArgumentValidationReceiver[CS] = {
       val validator: CommandSender => Result[Option[String], CS] = { sender: CommandSender =>
         sender match {
           case refinedSender: CS => Success(refinedSender)
@@ -21,6 +21,8 @@ object CommandConfiguration {
 
       ArgumentValidationReceiver[CS](validator)
     }
+
+    def canBeExecutedBy[CS <: CommandSender : ClassTag]: ArgumentValidationReceiver[CS] = canBeExecutedBy[CS](None)
   }
 
   case class ArgumentValidationReceiver[CS <: CommandSender](senderValidator: CommandSender => Result[Option[String], CS]) {
@@ -69,8 +71,9 @@ object CommandConfiguration {
     }
   }
 
-  def branchedCommand(routing: (String, TreeCommandExecutor)*)
-                     (branchMissingErrorMessage: Option[String] = None): BranchedCommandExecutor = {
+  def branchedCommand(branchMissingErrorMessage: Option[String], routing: (String, TreeCommandExecutor)*): BranchedCommandExecutor = {
     BranchedCommandExecutor(ListMap(routing: _*), branchMissingErrorMessage)
   }
+
+  def branchedCommand(routing: (String, TreeCommandExecutor)*): BranchedCommandExecutor = branchedCommand(None, routing: _*)
 }
