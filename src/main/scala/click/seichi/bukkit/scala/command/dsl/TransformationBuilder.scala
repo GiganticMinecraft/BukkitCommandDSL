@@ -5,7 +5,9 @@ import click.seichi.bukkit.scala.command.internal.generic.{:::, Result, TArgList
 import click.seichi.bukkit.scala.command.internal.generic.TArgListOps._
 
 object TransformationBuilder {
-  def startTransformation[B](transformation: ArgumentTransformation[B]): Trail[String] => Result[Option[String], B ::: Trail[String]] = { trail =>
+  final case class ArgumentTransformation[B](function: String => Option[B], errorOnFail: Option[String])
+
+  def transformFirstArgument[B](transformation: ArgumentTransformation[B]): Trail[String] => Result[Option[String], B ::: Trail[String]] = { trail =>
     trail.mapTrailHead(transformation.function) match {
       case Some(transformedArg) => Success(transformedArg)
       case None => Failed(transformation.errorOnFail)

@@ -23,7 +23,7 @@ object ExampleExecutor {
     configureCommand
       .canBeExecutedBy[Player]
       .argTransformations(
-        startTransformation(withoutErrorOnFailure(identity))
+        transformFirstArgument(withoutErrorOnFailure(identity))
           .thenTransform(withErrorOnFailure(positiveIntParser, "second argument must be a positive number."))
       )
       .executionWithContext { context =>
@@ -42,13 +42,13 @@ object ExampleExecutor {
     configureCommand
       .canBeExecutedBy[Player]
       .argTransformations(
-        startTransformation(ArgumentTransformation(playerFromName, Some("Player name invalid!")))
+        transformFirstArgument(withErrorOnFailure(playerFromName, "Player name invalid!"))
       )
       .executionWithContext(context => {
         val player: Player = context.args.head
 
         player.setHealth(0.0D)
-        player.sendMessage(s"You've been killed by ${context.sender.getName()}!")
+        player.sendMessage(s"You've been killed by ${context.sender.getName}!")
 
         succeed
       })
