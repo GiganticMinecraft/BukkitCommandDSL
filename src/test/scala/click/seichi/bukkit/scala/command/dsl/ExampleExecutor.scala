@@ -15,24 +15,21 @@ object ExampleExecutor {
   val intParser: String => Option[Int] = { string =>
     try { Some(string.toInt) } catch { case _: Throwable => None }
   }
+  val positiveIntParser: String => Option[Int] = string => for {
+    parsedInt <- intParser(string) if parsedInt > 0
+  } yield parsedInt
 
   def repeatMessageExecutor: TreeCommandExecutor = {
     configureCommand
       .canBeExecutedBy[Player]
       .argTransformations(
-        startTransformationWith(ArgumentTransformation(identity, None))
-          .thenTransformWith(ArgumentTransformation(intParser, Some("failed to parse second argument.")))
+        startTransformation(withoutErrorOnFailure(identity))
+          .thenTransform(withErrorOnFailure(positiveIntParser, "second argument must be a positive number."))
       )
       .executionWithContext { context =>
         context.args match { case message ::: number ::: _ =>
-          if (number > 0) {
-            for (_ <- 1 to number) context.sender.sendMessage(message)
-
-            succeed
-          } else {
-            // it could have been validated earlier but it's possible to do it now too
-            failWithMessage("number must be positive!")
-          }
+          for (_ <- 1 to number) context.sender.sendMessage(message)
+          succeed
         }
       }
   }
@@ -45,7 +42,7 @@ object ExampleExecutor {
     configureCommand
       .canBeExecutedBy[Player]
       .argTransformations(
-        startTransformationWith(ArgumentTransformation(playerFromName, Some("Player name invalid!")))
+        startTransformation(ArgumentTransformation(playerFromName, Some("Player name invalid!")))
       )
       .executionWithContext(context => {
         val player: Player = context.args.head

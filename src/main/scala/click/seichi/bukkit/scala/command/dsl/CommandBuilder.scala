@@ -30,6 +30,10 @@ object CommandBuilder {
       val validator: List[String] => Result[Option[String], Args] = { list => argValidator(Trail(list)) }
       ExecutionReceiverWithoutCompletion(senderValidator, validator)
     }
+
+    def withoutArgTransformations(): ExecutionReceiverWithoutCompletion[CS, Trail[String]] = {
+      ExecutionReceiverWithoutCompletion(senderValidator, { list => Success(Trail(list)) })
+    }
   }
 
   case class ExecutionReceiverWithoutCompletion[CS <: CommandSender, Args <: TArgList]
