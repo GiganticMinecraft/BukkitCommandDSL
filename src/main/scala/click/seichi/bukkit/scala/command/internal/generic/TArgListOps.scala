@@ -3,6 +3,9 @@ package click.seichi.bukkit.scala.command.internal.generic
 import click.seichi.bukkit.scala.command.internal.generic.TArgList.Tr
 
 object TArgListOps {
+  implicit class AppendableTArgList[T <: TArgList](tail: T) {
+    def :::[H](head: H): H ::: T = click.seichi.bukkit.scala.command.internal.generic.:::(head, tail)
+  }
 
   /**
     * Typeclass to witness that the head of the trail of value of type `TAL` can be mapped

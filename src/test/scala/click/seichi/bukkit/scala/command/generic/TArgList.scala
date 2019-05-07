@@ -1,6 +1,6 @@
 package click.seichi.bukkit.scala.command.generic
 
-import click.seichi.bukkit.scala.command.internal.generic.:::
+import click.seichi.bukkit.scala.command.internal.generic.{:::, Trail}
 import click.seichi.bukkit.scala.command.internal.generic.TArgList._
 import click.seichi.bukkit.scala.command.internal.generic.TArgListOps._
 
@@ -9,7 +9,7 @@ object TArgList {
     try { Some(string.toInt) } catch { case _: Throwable => None }
   }
 
-  val list1: Tr[String]                     = trail(List("123", "456", "non number string"))
+  val list1: Tr[String]                     = Trail(List("123", "456", "non number string"))
   val list2: Char ::: Tr[String]            = '0' ::: list1
   val list3: String ::: Char ::: Tr[String] = "123" ::: list2
 
