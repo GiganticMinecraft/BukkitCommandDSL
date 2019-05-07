@@ -2,6 +2,7 @@ package click.seichi.bukkit.scala.command.generic
 
 import click.seichi.bukkit.scala.command.internal.generic.:::
 import click.seichi.bukkit.scala.command.internal.generic.TArgList._
+import click.seichi.bukkit.scala.command.internal.generic.TArgListOps._
 
 object TArgList {
   val intParser: String => Option[Int] = { string =>
@@ -21,4 +22,10 @@ object TArgList {
     l72 <- l71.mapTrailHead(intParser)
     l73 <- l72.mapTrailHead(intParser)
   } yield l73 // expect None
+
+  val listPure: String => List[String] = str => List(str)
+
+  val list8: Tr[List[String]]                       = list1.mapTrail(listPure)
+  val list9: Char ::: Tr[List[String]]              = list2.mapTrail(listPure)
+  val list10: String ::: Char ::: Tr[List[String]]  = list3.mapTrail(listPure)
 }
