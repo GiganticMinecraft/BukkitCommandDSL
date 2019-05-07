@@ -24,7 +24,7 @@ object ExampleExecutor {
       .canBeExecutedBy[Player]
       .argTransformations(
         transformFirstArgument(withoutErrorOnFailure(identity))
-          .thenTransform(withErrorOnFailure(positiveIntParser, "second argument must be a positive number."))
+          .thenTransformNext(withErrorOnFailure(positiveIntParser, "second argument must be a positive number."))
       )
       .executionWithContext { context =>
         context.args match { case message ::: number ::: _ =>

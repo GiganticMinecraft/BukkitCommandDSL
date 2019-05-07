@@ -15,8 +15,8 @@ object TransformationBuilder {
   }
 
   implicit class ArgumentsTransformation[TAL <: TArgList](existingTransformation: Trail[String] => Result[Option[String], TAL]) {
-    def thenTransform[B](newTransformation: ArgumentTransformation[B])
-                        (implicit ev: TrailHeadMappable[TAL, String]): Trail[String] => Result[Option[String], ev.MapResult[B]] = { rawArgList =>
+    def thenTransformNext[B](newTransformation: ArgumentTransformation[B])
+                            (implicit ev: TrailHeadMappable[TAL, String]): Trail[String] => Result[Option[String], ev.MapResult[B]] = { rawArgList =>
       existingTransformation(rawArgList) match {
         case Success(typedArgList) =>
           ev.mapTrailHead(newTransformation.function)(typedArgList) match {
