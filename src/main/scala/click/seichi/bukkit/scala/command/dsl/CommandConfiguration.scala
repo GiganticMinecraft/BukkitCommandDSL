@@ -24,7 +24,7 @@ object CommandConfiguration {
   }
 
   case class ArgumentValidationReceiver[CS <: CommandSender](senderValidator: CommandSender => Result[Option[String], CS]) {
-    def withArgValidations[Args <: TArgList](argValidator: Trail[String] => Result[Option[String], Args]): ExecutionReceiverWithoutCompletion[CS, Args] = {
+    def argTransformations[Args <: TArgList](argValidator: Trail[String] => Result[Option[String], Args]): ExecutionReceiverWithoutCompletion[CS, Args] = {
       val validator: List[String] => Result[Option[String], Args] = { list => argValidator(Trail(list)) }
       ExecutionReceiverWithoutCompletion(senderValidator, validator)
     }

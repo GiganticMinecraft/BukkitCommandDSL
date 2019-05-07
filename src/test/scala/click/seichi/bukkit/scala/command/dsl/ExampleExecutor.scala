@@ -9,11 +9,16 @@ class Plugin extends JavaPlugin
 
 
 object ExampleExecutor {
+  val identity: String => Option[String] = Some[String]
+  val intParser: String => Option[Int] = { string =>
+    try { Some(string.toInt) } catch { case _: Throwable => None }
+  }
+
   def repeatMessageExecutor: TreeCommandExecutor = {
     configureCommand
       .canBeExecutedBy[Player]()
-      .withArgValidations(
-
+      .argTransformations(
+        transformWith(identity) then transformWith(intParser)
       )
       .executionWithContext {
         context =>
@@ -31,10 +36,16 @@ object ExampleExecutor {
       }
   }
 
+  def playerFromName(implicit plugin: JavaPlugin): String => Option[Player] = { playerName =>
+    Option(plugin.getServer.getPlayer(playerName))
+  }
+
   def killPlayerExecutor(implicit plugin: Plugin): TreeCommandExecutor = {
     configureCommand
       .canBeExecutedBy[Player]()
-      .withArgValidations()
+      .argTransformations(
+        validateWith(playerFromName)
+      )
       .executionWithContext(context => {
         val player: Player = context.args.head
         player.setHealth(0.0D)
