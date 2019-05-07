@@ -14,7 +14,7 @@ object TArgListOps {
     * @tparam TAL a subtype of `TArgList` to have the described property
     * @tparam Trail type of the elements in the trail of `TAL`
     */
-  trait TrailHeadMappable[TAL <: TArgList, Trail] {
+  sealed trait TrailHeadMappable[TAL <: TArgList, Trail] {
     type MapResult[_] <: TArgList
     def mapTrailHead[B](conversion: Trail => Option[B])(argList: TAL): Option[MapResult[B]]
   }
