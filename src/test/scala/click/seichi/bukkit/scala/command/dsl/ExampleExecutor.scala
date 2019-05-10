@@ -34,15 +34,11 @@ object ExampleExecutor {
       }
   }
 
-  def playerFromName(implicit plugin: JavaPlugin): String => Option[Player] = { playerName =>
-    Option(plugin.getServer.getPlayer(playerName))
-  }
-
   def killPlayerExecutor(implicit plugin: Plugin): TreeCommandExecutor = {
     configureCommand
       .canBeExecutedBy[Player]
       .argTransformations(
-        transformFirstArgWithError(playerFromName, "Player name invalid!")
+        transformFirstArgWithError(playerName => Option(plugin.getServer.getPlayer(playerName)), "Player name invalid!")
       )
       .executionWithContext(context => {
         val player: Player = context.args.head
