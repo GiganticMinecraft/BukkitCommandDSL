@@ -23,8 +23,8 @@ object ExampleExecutor {
     configureCommand
       .canBeExecutedBy[Player]
       .argTransformations(
-        transformFirstArgument(withoutErrorOnFailure(identity))
-          .thenTransformNext(withErrorOnFailure(positiveIntParser, "second argument must be a positive number."))
+        transformFirstArgWithoutError(identity)
+          .thenTransformNextWithError(positiveIntParser, "second argument must be a positive number.")
       )
       .executionWithContext { context =>
         context.args match { case message ::: number ::: _ =>
@@ -42,7 +42,7 @@ object ExampleExecutor {
     configureCommand
       .canBeExecutedBy[Player]
       .argTransformations(
-        transformFirstArgument(withErrorOnFailure(playerFromName, "Player name invalid!"))
+        transformFirstArgWithError(playerFromName, "Player name invalid!")
       )
       .executionWithContext(context => {
         val player: Player = context.args.head
@@ -59,9 +59,5 @@ object ExampleExecutor {
       "repeatmsg" -> repeatMessageExecutor,
       "killplayer" -> killPlayerExecutor
     )
-  }
-
-  def main(args: Array[String]): Unit = {
-
   }
 }
